@@ -10,20 +10,21 @@ class Client:
     def server_conn(self, message):
         with socket.create_connection((self.host, self.port)) as sock:
             sock.settimeout(self.timeout)
-            sock.sendall(message, encode("utf8"))
+            sock.sendall(str(message).encode())
             server_responce = sock.recv(1024).decode("utf8")
+            print(server_responce)
         return server_responce
 
     def get(self, message):
+        message = "get {}".format(message)
         server_responce = dict ()
         server_responce = self.server_conn(message)
         return server_responce
 
     def put(self, metric_name, value, timestamp = None):
-        message = dict()
         if timestamp == None :
             timestamp = str(int(time.time()))
-        message[metric_name] = (timestamp, value)
+        message = "put {} {} {}".format(metric_name, timestamp, value)
         try:
             self.server_conn(message)
         except Exception as e:
@@ -33,7 +34,7 @@ class ClientError:
     pass
 
 def _main():
-    client = Client("127.0.0.1", 8888, timeout=15)
+    client = Client("127.0.0.1", 8181, timeout=15)
 
     client.put("palm.cpu", 0.5, timestamp=1150864247)
     client.put("palm.cpu", 2.0, timestamp=1150864248)
@@ -43,8 +44,8 @@ def _main():
     client.put("eardrum.cpu", 4, timestamp=1150864251)
     client.put("eardrum.memory", 4200000)
 
-    print(client.get("*"))
-
+    client.get("palm.cpu")
+    client.get("*")
 
 if __name__ == "__main__":
     _main()

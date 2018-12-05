@@ -32,7 +32,8 @@ class Truck(CarBase):
     def __init__(self, brand, photo_file_name, carrying, body_whl):
         super().__init__(brand, photo_file_name, carrying)
         if body_whl:
-            self.body_width, self.body_height, self.body_length = [float(x) for x in body_whl.split('x')]
+            self.body_width, self.body_height, self.body_length = [
+                float(x) for x in body_whl.split('x')]
         else:
             self.body_width, self.body_height, self.body_length = [0, 0, 0]
         self.car_type = TRUCK
