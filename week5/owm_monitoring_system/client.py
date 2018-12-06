@@ -1,13 +1,17 @@
-import time
+"""TCP client"""
 import socket
+import time
+
 
 class Client:
-    def __init__(self, host, port, timeout = None):
+    """Client class"""
+    def __init__(self, host, port, timeout=None):
         self.host = str(host)
         self.port = int(port)
         self.timeout = timeout
 
-    def server_conn(self, message):
+    def connection(self, message):
+        """Server connection"""
         with socket.create_connection((self.host, self.port)) as sock:
             sock.settimeout(self.timeout)
             sock.sendall(str(message).encode())
@@ -16,22 +20,21 @@ class Client:
         return server_responce
 
     def get(self, message):
+        """get responce from server"""
         message = "get {}".format(message)
-        server_responce = dict ()
-        server_responce = self.server_conn(message)
+        server_responce = dict()
+        server_responce = self.connection(message)
         return server_responce
 
-    def put(self, metric_name, value, timestamp = None):
-        if timestamp == None :
+    def put(self, metric_name, value, timestamp=None):
+        """pull some metric to the server"""
+        if timestamp is None:
             timestamp = str(int(time.time()))
         message = "put {} {} {}".format(metric_name, timestamp, value)
         try:
-            self.server_conn(message)
-        except Exception as e:
-            print(e)
-
-class ClientError:
-    pass
+            self.connection(message)
+        except Exception as er:
+            print(er)
 
 def _main():
     client = Client("127.0.0.1", 8181, timeout=15)
@@ -46,6 +49,8 @@ def _main():
 
     client.get("palm.cpu")
     client.get("*")
+    client.get("non_existing_key")
+
 
 if __name__ == "__main__":
     _main()
